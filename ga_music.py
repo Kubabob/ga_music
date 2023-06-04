@@ -4,15 +4,14 @@ from ga_options import *
 import time
 import instruments
 
-def tuning(key: str, scale_: str, population_count: int, mutation_prob: float, bpm: int, octaves_count: int, first_octave: int, instrument: EventInstrument, tact_numbers: int,
-           notes_per_tact: int, is_pause: bool, solution: list[int]):
+def tuning(scale: EventScale, bpm: int, instrument: EventInstrument, tact_numbers: int, notes_per_tact: int, solution: list[int]):
     server = Server().boot()
-    scalei = EventScale(root=key, scale=scale_, first=first_octave, octaves=octaves_count)
+
 
     note_list = []
-
+    
     for sol in solution:
-        note_list.append(scalei[sol])
+        note_list.append(scale[sol])
 
 
 # We tell the Events object which instrument to use with the 'instr' argument.
