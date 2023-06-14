@@ -27,7 +27,7 @@ class GA_music:
         return Sine(freq=freq, mul=amp).mix(2).out()
 
     def play_music(self, solution: list):
-        server = Server().boot()
+        server = Server(nchnls=1).boot()
 
         self.note_list_1 = []
         self.note_list_2 = []
