@@ -116,7 +116,7 @@ class GA_music:
         
         server.start()
 
-        time.sleep(sum(self.durr)/(self.bpm/60))
+        time.sleep(sum(self.durr)/(self.bpm/60)+0.5)
 
         server.stop()
 
@@ -160,9 +160,9 @@ class GA_music:
             self.note_list_2.append(self.scale[2])
             self.note_list_3.append(self.scale[4])
 
-            self.vel1.append(100)
-            self.vel2.append(100)
-            self.vel3.append(100)
+            self.vel1.append(60)
+            self.vel2.append(60)
+            self.vel3.append(60)
 
             self.durr.append(2)
 

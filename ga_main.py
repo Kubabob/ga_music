@@ -5,18 +5,17 @@ from ga_options import *
 from midiutil import MIDIFile
 
 
-#dodac rozwiazanie na koniec melodii
-#dodac dwudzwieki (40, 30, 30)
 #dac opcje zmiany dlugosci dzwiekow
-#posprzatac kod
-#zapisywanie wyniku jako plik audio
 
 def genetic_music_algo():
+    melody_idx = 1
     def fitness_func(ga_instance, solution, sol_idx):
+        global melody_idx
 
-        print(f'\nGeneracja nr {(sol_idx//num_notes)+1}')
-        print(f'Melodia nr {sol_idx}')
+        print(f'\nGeneracja nr {(melody_idx//num_notes)+1}')
+        print(f'Melodia nr {melody_idx}')
         music_instance.play_music(solution=solution)
+        melody_idx += 1
         
         return option(None, 0, 'Ocena [0-10]', int)
     
@@ -30,17 +29,18 @@ def genetic_music_algo():
                             sol_per_pop=population_count,
                             num_genes=num_notes*3,
                             parent_selection_type='rank',
+                            crossover_type='two_points',
                             mutation_probability=mutation_prob,
                             mutation_num_genes=mutation_count,
                             gene_space=gene_space,
                             gene_type = int,
-                            #keep_elitism=1,
                             save_best_solutions=True
                             )
         if is_finished:
             if option(None, False, 'Czy chcesz zapisac melodie?', bool):
                 ga_instance = pg.load('previous_load')
                 music_instance.save_melody_to_midi(option(None, f'Melodia_{time.strftime("%b%d%Y%H%M%S")}', 'Jak chcesz nazwać melodię?', str), ga_instance.best_solutions[0])
+                print(f'Wynik najlepszej: {ga_instance.best_solution()[1]}')
         else:
             if is_continued:
                 ga_instance = pg.load(previous_load)
