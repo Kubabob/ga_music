@@ -14,6 +14,7 @@ from midiutil import MIDIFile
 def genetic_music_algo():
     def fitness_func(ga_instance, solution, sol_idx):
 
+        print(f'Generacja nr {sol_idx%num_notes}')
         print(f'Melodia nr {sol_idx+1}')
         music_instance.play_music(solution=solution)
         
