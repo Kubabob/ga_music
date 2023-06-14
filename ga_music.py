@@ -3,161 +3,183 @@ import random
 from ga_options import *
 import time
 import instruments
+from midiutil import MIDIFile
 
-def metronome(bpm: int):
-    met = Metro(time=1 / (bpm / 60.0)).play()
-    t = CosTable([(0, 0), (50, 1), (200, .3), (500, 0)])
-    amp = TrigEnv(met, table=t, dur=.25, mul=1)
-    freq = Iter(met, choice=[660, 440, 440, 440])
-    return Sine(freq=freq, mul=amp).mix(2).out()
+class GA_music:
 
-def tuning(scale: EventScale, bpm: int, tact_numbers: int, notes_per_tact: int, solution: list):
-    server = Server().boot()
+    def __init__(self, scale: EventScale, bpm: int, tact_numbers: int, notes_per_tact: int):
+        self.note_list_1 = []
+        self.note_list_2 = []
+        self.note_list_3 = []
+        self.durr = []
+        self.vel1 = []
+        self.vel2 = []
+        self.vel3 = []
+        self.num_notes = tact_numbers*notes_per_tact
+        self.bpm = bpm
+        self.scale = scale
 
-    m = metronome(bpm)
+    def metronome(self, bpm: int):
+        met = Metro(time=1 / (bpm / 60.0)).play()
+        t = CosTable([(0, 0), (50, 1), (200, .3), (500, 0)])
+        amp = TrigEnv(met, table=t, dur=.25, mul=1)
+        freq = Iter(met, choice=[660, 440, 440, 440])
+        return Sine(freq=freq, mul=amp).mix(2).out()
 
-    num_notes = tact_numbers*notes_per_tact
+    def play_music(self, solution: list):
+        server = Server().boot()
 
-    note_list_1 = []
-    note_list_2 = []
-    note_list_3 = []
+        self.note_list_1 = []
+        self.note_list_2 = []
+        self.note_list_3 = []
+        self.durr = []
+        self.vel1 = []
+        self.vel2 = []
+        self.vel3 = []
 
-    durr = []
-    #durr = 4 / notes_per_tact
-    db1 = []
-    db2 = []
-    db3 = []
-    
-    notes_per_sec = bpm/60
-    
-    for i in range(num_notes):
-        if 0 <= solution[i+num_notes] < 3:
-            note_list_1.append(scale[solution[i]])
-            db1.append(-12)
-            note_list_2.append(scale[1])
-            db2.append(-100)
-            note_list_3.append(scale[1])
-            db3.append(-100)
-        else:
-            note_list_1.append(scale[solution[i]])
-            db1.append(-12)
-            note_list_2.append(scale[solution[i]+2])
-            db2.append(-12)
-            note_list_3.append(scale[solution[i]+4])
-            db3.append(-12)
-        #durr.append(float(solution[i+2*num_notes]/notes_per_sec))
-        durr.append(float(solution[i+2*num_notes]))
+        m = self.metronome(self.bpm)
         
-        '''elif 5 <= solution[i+num_notes] < 7:
-            note_list_1.append(scale[solution[i]])
-            db1.append(-12)
-            note_list_2.append(scale[solution[i]+2])
-            db2.append(-12)
-            note_list_3.append(scale[1])
-            db3.append(-100)'''
+        
+        for i in range(self.num_notes):
+            if 0 <= solution[i+self.num_notes] < 4:
+                self.note_list_1.append(self.scale[solution[i]])
+                self.vel1.append(100)
+                self.note_list_2.append(self.scale[1])
+                self.vel2.append(0)
+                self.note_list_3.append(self.scale[1])
+                self.vel3.append(0)
+            elif 4 <= solution[i+self.num_notes] < 7:
+                self.note_list_1.append(self.scale[solution[i]])
+                self.vel1.append(100)
+                self.note_list_2.append(self.scale[solution[i]+2])
+                self.vel2.append(100)
+                self.note_list_3.append(self.scale[1])
+                self.vel3.append(0)
+            else:
+                self.note_list_1.append(self.scale[solution[i]])
+                self.vel1.append(100)
+                self.note_list_2.append(self.scale[solution[i]+2])
+                self.vel2.append(100)
+                self.note_list_3.append(self.scale[solution[i]+4])
+                self.vel3.append(100)
+            self.durr.append(float(solution[i+2*self.num_notes]))
+        else:
+            self.note_list_1.append(self.scale[0])
+            self.note_list_2.append(self.scale[2])
+            self.note_list_3.append(self.scale[4])
 
-    attack = 0.001
-    decay = 0.05
-    sustain = 0.5
-    release = 0.005
+            self.vel1.append(100)
+            self.vel2.append(100)
+            self.vel3.append(100)
 
-# We tell the Events object which instrument to use with the 'instr' argument.
-    e1 = Events(
-        #instr=getattr(instruments, instrument),
-        midinote=EventSeq(note_list_1, 1),
-        #dur=durr,
-        beat=durr,
-        bpm=bpm,
-        db=db1,
-        attack=attack,
-        decay=decay,
-        sustain=sustain,
-        release=release,
-    ).play()
+            self.durr.append(2)
+            
+        
+        attack = 0.001
+        decay = 0.05
+        sustain = 0.5
+        release = 0.005
 
-    e2 = Events(
-        #instr=getattr(instruments, instrument),
-        midinote=EventSeq(note_list_2, 1),
-        #dur=durr,
-        beat=durr,
-        bpm=bpm,
-        db=db2,
-        attack=attack,
-        decay=decay,
-        sustain=sustain,
-        release=release,
-    ).play()
-
-    e3 = Events(
-        #instr=getattr(instruments, instrument),
-        midinote=EventSeq(note_list_3, 1),
-        #dur=durr,
-        beat=durr,
-        bpm=bpm,
-        db=db3,
-        attack=attack,
-        decay=decay,
-        sustain=sustain,
-        release=release,
-    ).play()
-
-    '''for i in range(len(note_list_1)):
         e1 = Events(
-        instr=getattr(instruments, instrument),
-        midinote=EventSeq(note_list_1[i], 1),
-        dur=durr[i],
-        #beat=durr[i],
-        bpm=bpm,
-        db=db1[i],
-        attack=attack,
-        decay=decay,
-        sustain=sustain,
-        release=release,
-    ).play()
+            midinote=EventSeq(self.note_list_1, 1),
+            midivel=self.vel1,
+            beat=self.durr,
+            bpm=self.bpm,
+            attack=attack,
+            decay=decay,
+            sustain=sustain,
+            release=release,
+        ).play()
 
-    e2 = Events(
-        instr=getattr(instruments, instrument),
-        midinote=EventSeq(note_list_2[i], 1),
-        dur=durr[i],
-        #beat=durr[i],
-        bpm=bpm,
-        db=db2[i],
-        attack=attack,
-        decay=decay,
-        sustain=sustain,
-        release=release,
-    ).play()
+        e2 = Events(
+            midinote=EventSeq(self.note_list_2, 1),
+            midivel=self.vel2,
+            beat=self.durr,
+            bpm=self.bpm,
+            attack=attack,
+            decay=decay,
+            sustain=sustain,
+            release=release,
+        ).play()
 
-    e3 = Events(
-        instr=getattr(instruments, instrument),
-        midinote=EventSeq(note_list_3[i], 1),
-        dur=durr[i],
-        #beat=durr[i],
-        bpm=bpm,
-        db=db3[i],
-        attack=attack,
-        decay=decay,
-        sustain=sustain,
-        release=release,
-    ).play()'''
+        e3 = Events(
+            midinote=EventSeq(self.note_list_3, 1),
+            midivel=self.vel3,
+            beat=self.durr,
+            bpm=self.bpm,
+            attack=attack,
+            decay=decay,
+            sustain=sustain,
+            release=release,
+        ).play()
 
-    server.start()
+        
+        server.start()
 
-    #time.sleep(notes_per_tact*tact_numbers* durr/(bpm/60))
-    time.sleep(sum(durr)/(bpm/60))
+        time.sleep(sum(self.durr)/(self.bpm/60))
 
-    server.stop()
+        server.stop()
+
+    def save_melody_to_midi(self, filename: str, solution):
+
+        self.note_list_1 = []
+        self.note_list_2 = []
+        self.note_list_3 = []
+        self.durr = []
+        self.vel1 = []
+        self.vel2 = []
+        self.vel3 = []
+        
+        print(solution)
+        
+        for i in range(self.num_notes):
+            if 0 <= solution[i+self.num_notes] < 4:
+                self.note_list_1.append(self.scale[solution[i]])
+                self.vel1.append(100)
+                self.note_list_2.append(self.scale[1])
+                self.vel2.append(0)
+                self.note_list_3.append(self.scale[1])
+                self.vel3.append(0)
+            elif 4 <= solution[i+self.num_notes] < 7:
+                self.note_list_1.append(self.scale[solution[i]])
+                self.vel1.append(100)
+                self.note_list_2.append(self.scale[solution[i]+2])
+                self.vel2.append(100)
+                self.note_list_3.append(self.scale[1])
+                self.vel3.append(0)
+            else:
+                self.note_list_1.append(self.scale[solution[i]])
+                self.vel1.append(100)
+                self.note_list_2.append(self.scale[solution[i]+2])
+                self.vel2.append(100)
+                self.note_list_3.append(self.scale[solution[i]+4])
+                self.vel3.append(100)
+            self.durr.append(float(solution[i+2*self.num_notes]))
+        else:
+            self.note_list_1.append(self.scale[0])
+            self.note_list_2.append(self.scale[2])
+            self.note_list_3.append(self.scale[4])
+
+            self.vel1.append(100)
+            self.vel2.append(100)
+            self.vel3.append(100)
+
+            self.durr.append(2)
+
+        mf = MIDIFile(1)
+
+        track = 0
+        channel = 0
+        time = 0.0
+        mf.addTrackName(track, time, filename)
+        mf.addTempo(track, time, self.bpm)
+
+        for i in range(len(self.note_list_1)):
+            mf.addNote(track, channel, self.note_list_1[i], time, self.durr[i], self.vel1[i])
+            mf.addNote(track, channel, self.note_list_2[i], time, self.durr[i], self.vel2[i])
+            mf.addNote(track, channel, self.note_list_3[i], time, self.durr[i], self.vel3[i])
+            time += self.durr[i]
 
 
-'''tuning(key=option(KEYS, 'C', 'Klucz', str),
-       scale=option(SCALES, 'major', 'Skala', str),
-       population_count=option(None, 10, 'Liczba na populacje', int),
-       mutation_prob=option(None, 0.5, 'Prawdopodobienstwo mutacji [0-1]', float),
-       bpm=option(None, 120, 'Tempo [0-128]', int),
-       octaves_count=option(None, 2, 'Liczba oktaw', int),
-       first_octave=option(None, 4, 'Numer pierwszej oktawy', int),
-       instrument=option(INSTRUMENTS, 'MyInstrument', 'Wybierz instrument', str),
-       tact_numbers=option(None, 2, 'Liczba taktów', int),
-       notes_per_tact=option(None, 4, 'Liczba nut na takt', int),
-       is_pause=option(IS_PAUSE, False, 'Czy uwzględniać pauzy', bool),
-       solution=[0,1,2,3,4,5])'''
+        with open(f'{filename}.mid', 'wb') as file:
+            mf.writeFile(file)

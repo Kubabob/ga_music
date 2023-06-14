@@ -4,7 +4,7 @@ import time
 
 
 KEYS = ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"]
-SCALES = ["major", "minorM", "ionian", "dorian", "phrygian", "lydian", "mixolydian", "aeolian", "locrian"]
+SCALES = ["major", 'minorH', "minorM", "ionian", "dorian", "phrygian", "lydian", "mixolydian", "aeolian", "locrian", 'wholeTone', 'majorPenta', 'minorPenta', 'egyptian', 'majorBlues', 'minorBlues', 'minorHungarian']
 IS_PAUSE = [True, False]
 INSTRUMENTS = ['1', 'funky90', 'funky80', 'MyInstrument']
 

@@ -20,21 +20,59 @@ class funky80(EventInstrument):
         # EventInstrument created the amplitude envelope as self.env.
         self.filt = ButLP(self.osc, freq=10000, mul=self.env).out()
 
+class MyInstrument(EventInstrument):
+    def __init__(self, **args):
+        EventInstrument.__init__(self, **args)
+
+        # self.freq is derived from the 'degree' argument.
+        self.phase = Phasor([self.freq, self.freq * 1.01])
+
+        # self.dur is derived from the 'beat' argument.
+        self.duty = Expseg([(0, 2), (self.dur, 0.4)], exp=4).play()
+
+        self.osc = Compare(self.phase, self.duty, mode="<", mul=1, add=-0.3)
+        #self.osc.ctrl()
+
+        # EventInstrument created the amplitude envelope as self.env.
+        self.filt = ButLP(self.osc, freq=10000, mul=self.env).out()
+
         
 scl = EventScale('D', 'minorH')
 seq = [scl[random.randint(0,8)] for _ in range(16)]
 sql = [scl[i] for i in range(8)]
+tseq = [scl[i] for i in range(0, 5)]
+tseq2 = [scl[i] for i in range(2, 7)]
+
+attack = 0.001
+decay = 0.05
+sustain = 0.5
+release = 0.005
 
 # We tell the Events object which instrument to use with the 'instr' argument.
 e = Events(
-    instr=funky80,
-    midinote=EventSeq(seq, 1),
-    beat=1 / 2.7,
-    db=-3,
-    attack=0.05,
-    decay=0.02,
-    sustain=0.3,
-    release=0.03,
+    instr=MyInstrument,
+    midinote=EventSeq(tseq, 1),
+    #dur = [1, 1, 1, 1, 1],
+    beat=[1, 1, 1, 1, 1],
+    bpm = 80,
+    db=[-10, -100, -10, -10, -10],
+    attack=attack,
+    decay=decay,
+    sustain=sustain,
+    release=release,
+).play()
+
+e2 = Events(
+    instr=MyInstrument,
+    midinote=EventSeq(tseq2, 1),
+    #dur = [1, 1, 1, 1, 1],
+    beat=[1, 1, 1, 1, 1],
+    bpm=80,
+    db=[-10, -100, -10, -10, -10],
+    attack=attack,
+    decay=decay,
+    sustain=sustain,
+    release=release,
 ).play()
 
 '''
