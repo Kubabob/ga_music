@@ -8,14 +8,14 @@ from midiutil import MIDIFile
 #dac opcje zmiany dlugosci dzwiekow
 
 def genetic_music_algo():
-    melody_idx = 1
+    #melody_idx = 1
     def fitness_func(ga_instance, solution, sol_idx):
-        global melody_idx
+        #global melody_idx
 
-        print(f'\nGeneracja nr {(melody_idx//num_notes)+1}')
-        print(f'Melodia nr {melody_idx}')
+        #print(f'\nGeneracja nr {(melody_idx//num_notes)+1}')
+        #print(f'Melodia nr {melody_idx}')
         music_instance.play_music(solution=solution)
-        melody_idx += 1
+        #melody_idx += 1
         
         return option(None, 0, 'Ocena [0-10]', int)
     
