@@ -2,13 +2,9 @@ from pyo import *
 import pygad as pg
 import time
 
-
-KEYS = ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"]
-SCALES = ["major", 'minorH', "minorM", "ionian", "dorian", "phrygian", "lydian", "mixolydian", "aeolian", "locrian", 'wholeTone', 'majorPenta', 'minorPenta', 'egyptian', 'majorBlues', 'minorBlues', 'minorHungarian']
-IS_PAUSE = [True, False]
-INSTRUMENTS = ['1', 'funky90', 'funky80', 'MyInstrument']
-
-
+'''
+    Set of algorithms that saves our program from fools, testers and Wojtek.
+'''
 
 def is_float(a_string):
     try:
@@ -26,7 +22,10 @@ def case_insensitive_search(key: str, list: list[str]):
         return False
 
 def option(reference, default, prompt, answer_type):
-    if reference != None:
+    '''
+    Algorithm that saves our program from fools, testers and Wojtek.
+    '''
+    if reference is not None:
         choosen = input(f'Do wyboru:\n{reference}\n\n{prompt}[{default}]: ')
     else:
         choosen = input(f'{prompt}[{default}]: ')
@@ -48,7 +47,7 @@ def option(reference, default, prompt, answer_type):
     elif choosen == '':
         return default
     
-    if reference != None:
+    if reference is not None:
         if type(choosen) != answer_type:
             print(f'Niepoprawny typ zmiennej!')
             input('Naciśnij ENTER aby kontynuować')
@@ -61,7 +60,7 @@ def option(reference, default, prompt, answer_type):
             else:
                 return choosen
         elif type(choosen) == str:
-            if case_insensitive_search(choosen, reference) == False:
+            if not case_insensitive_search(choosen, reference):
                 print(f'Niepoprawna wartość!')
                 input('Naciśnij ENTER aby kontynuować')
                 return option(reference,default,prompt,answer_type)
