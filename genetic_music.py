@@ -53,16 +53,16 @@ class Genetic_music:
                   "locrian", 'wholeTone', 'majorPenta', 'minorPenta', 'egyptian', 'majorBlues', 'minorBlues',
                   'minorHungarian']
         self.gene_space = None
-        self.key = option(keys, 'C', 'Klucz', str)
-        self.scale = option(scales, 'major', 'Skala', str)
-        self.population_count = option(None, 4, 'Liczba melodii na populacje', int)
+        self.key = option(keys, 'C', 'Key', str)
+        self.scale = option(scales, 'major', 'Scale', str)
+        self.population_count = option(None, 4, 'Number of melodies per generation', int)
         self.bpm = option(None, 100, 'Tempo [0-128]', int)
-        self.octaves_count = option(None, 2, 'Liczba oktaw', int)
-        self.first_octave = option(None, 4, 'Numer pierwszej oktawy', int)
-        self.tact_numbers = option(None, 2, 'Liczba taktów', int)
-        self.notes_per_tact = option(None, 4, 'Liczba nut na takt', int)
-        self.mutation_count = option(None, 2, 'Liczba mutacji', int)
-        self.mutation_prob = option(None, 0.3, 'Prawdopodobienstwo mutacji [0-1]', float)
+        self.octaves_count = option(None, 2, 'Number of octaves', int)
+        self.first_octave = option(None, 4, 'Number of first octave', int)
+        self.tact_numbers = option(None, 2, 'Number of tacts', int)
+        self.notes_per_tact = option(None, 4, 'Number of notes per tact', int)
+        self.mutation_count = option(None, 2, 'Number of potential mutations', int)
+        self.mutation_prob = option(None, 0.3, 'Mutation probability [0-1]', float)
         self.num_notes = self.tact_numbers * self.notes_per_tact
 
         self.eventScale = EventScale(root=self.key, scale=self.scale, first=self.first_octave,
